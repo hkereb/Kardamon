@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class KardamonApplication {
 
 	public static void main(String[] args) {
-
 		SpringApplication.run(KardamonApplication.class, args);
 	}
 
