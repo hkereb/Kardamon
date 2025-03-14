@@ -1,6 +1,6 @@
 package com.github.hkereb.kardamon;
 
-import com.github.hkereb.kardamon.model.UrlDto;
+import com.github.hkereb.kardamon.model.RequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,12 +19,14 @@ import java.io.IOException;
 @RequestMapping("/api")
 public class KardamonController {
     private static final Logger logger = LoggerFactory.getLogger(KardamonController.class);
+    private final KardamonService kardamonService;
 
     public KardamonController(KardamonService kardamonService) {
+        this.kardamonService = kardamonService;
     }
 
     @PostMapping("/fetchHTML")
-    public ResponseEntity<String> fetchHTML (@RequestBody UrlDto inputUrl, HttpServletRequest request) {
+    public ResponseEntity<String> fetchHTML (@RequestBody RequestDto inputUrl, HttpServletRequest request) {
         String url = inputUrl.url();
 
         logger.info("handled request at {}", request.getRequestURL().toString());
@@ -35,7 +37,7 @@ public class KardamonController {
                     .userAgent("Mozilla/5.0")
                     .timeout(10000)
                     .get();
-            return ResponseEntity.ok(doc.html());
+            return ResponseEntity.ok(kardamonService.extractRecipe(doc)); //TODO parse the HTML
         } catch (IOException e) {
             logger.error("cant fetch page: {}: {}", url, e.getMessage());
             return ResponseEntity.badRequest().body("error occurred when fetching the page");

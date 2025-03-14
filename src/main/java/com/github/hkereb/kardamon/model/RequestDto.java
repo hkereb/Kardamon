@@ -1,4 +1,4 @@
 package com.github.hkereb.kardamon.model;
 
-public record UrlDto(String url) {
+public record RequestDto(String url) {
 }
