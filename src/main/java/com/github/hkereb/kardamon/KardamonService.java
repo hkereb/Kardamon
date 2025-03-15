@@ -6,19 +6,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.github.hkereb.kardamon.parser.RecipeParser;
+import org.json.JSONObject;
 
 import java.util.*;
 
 @Service
 public class KardamonService {
     private static final Logger logger = LoggerFactory.getLogger(KardamonService.class);
-    private final RecipeParser recipeParser;
 
-    public KardamonService(RecipeParser recipeParser) {
-        this.recipeParser = recipeParser;
-    }
-
-    public String extractRecipe(Document doc) {
-        return recipeParser.getTitle(doc);
+    public JSONObject extractRecipe(Document doc) {
+        RecipeParser recipeParser = new RecipeParser(doc);
+        return recipeParser.parseRecipe();
     }
 }

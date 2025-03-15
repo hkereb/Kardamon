@@ -1,11 +1,13 @@
 package com.github.hkereb.kardamon;
 
+import com.github.hkereb.kardamon.model.JsonObject;
 import com.github.hkereb.kardamon.model.RequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.json.JSONObject;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,10 +39,11 @@ public class KardamonController {
                     .userAgent("Mozilla/5.0")
                     .timeout(10000)
                     .get();
-            return ResponseEntity.ok(kardamonService.extractRecipe(doc)); //TODO parse the HTML
+            //return ResponseEntity.ok(doc.html());
+            return ResponseEntity.ok(kardamonService.extractRecipe(doc).toString());
         } catch (IOException e) {
             logger.error("cant fetch page: {}: {}", url, e.getMessage());
-            return ResponseEntity.badRequest().body("error occurred when fetching the page");
+            return ResponseEntity.badRequest().body("cant fetch the page");
         }
     }
 }

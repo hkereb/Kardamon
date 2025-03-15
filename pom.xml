@@ -58,6 +58,12 @@
 			<artifactId>jakarta.servlet-api</artifactId>
 			<version>6.1.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20240303</version>
+		</dependency>
 	</dependencies>
 
 	<build>
