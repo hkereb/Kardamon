@@ -20,13 +20,15 @@ public class RecipeParser {
         JSONObject jsonLdObject = getJsonLDObject();
 
         if (jsonLdObject != null) {
-            return parseJsonLd(jsonLdObject);
+            JSONObject parsed = parseJsonLd(jsonLdObject);
+            if (!parsed.getJSONArray("ingredients").isEmpty()) {
+                return parsed;
+            }
         }
 
-//        // Jeśli nie znaleziono JSON-LD, spróbujmy odczytać dane z Microdata
-//        if (hasMicrodata()) {
-//            return parseMicrodata();
-//        }
+        if (hasMicrodata()) {
+            return parseMicrodata();
+        }
 
         // Jeśli nic nie znaleźliśmy, stosujemy awaryjne parsowanie na podstawie heurystyk
         //return parseFallback();
@@ -101,16 +103,11 @@ public class RecipeParser {
 
         recipeJson.put("title", getTitle());
         recipeJson.put("description", getDescription());
-        recipeJson.put("servings", extractServings());
+        recipeJson.put("servings", extractMicrodataString("recipeYield"));
         recipeJson.put("ingredients", extractMicrodataList("recipeIngredient"));
         recipeJson.put("instructions", extractMicrodataList("recipeInstructions"));
 
         return recipeJson;
-    }
-
-    private String extractMeta(String itemprop) {
-        Element element = doc.selectFirst("[itemprop='" + itemprop + "']");
-        return (element != null) ? element.text() : "";
     }
 
     private String extractServings() {
@@ -132,7 +129,17 @@ public class RecipeParser {
         }
         return results;
     }
-
+    private String extractMicrodataString(String itemprop) {
+        Element element = doc.selectFirst("[itemprop='" + itemprop + "']");
+        if (element != null) {
+            String content = element.attr("content");
+            if (!content.isEmpty()) {
+                return content;
+            }
+            return element.text();
+        }
+        return "";
+    }
     private JSONObject parseFallback() {
         JSONObject recipeJson = new JSONObject();
         recipeJson.put("title", getTitle());
@@ -142,7 +149,6 @@ public class RecipeParser {
         recipeJson.put("instructions", Collections.emptyList());
         return recipeJson;
     }
-
     private String getTitle() {
         Element ogTitle = doc.selectFirst("meta[property=og:title]");
         return (ogTitle != null) ? ogTitle.attr("content") : doc.title();

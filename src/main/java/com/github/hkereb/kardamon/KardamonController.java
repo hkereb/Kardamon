@@ -37,6 +37,7 @@ public class KardamonController {
                     .timeout(10000)
                     .get();
             //return ResponseEntity.ok(doc.html());
+            // TODO add url to the jsonObject
             return ResponseEntity.ok(kardamonService.extractRecipe(doc).toString());
         } catch (IOException e) {
             logger.error("cant fetch page: {}: {}", url, e.getMessage());
