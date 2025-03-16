@@ -1,13 +1,11 @@
 package com.github.hkereb.kardamon;
 
-import com.github.hkereb.kardamon.model.JsonObject;
 import com.github.hkereb.kardamon.model.RequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.json.JSONObject;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +22,8 @@ public class KardamonController {
         this.kardamonService = kardamonService;
     }
 
-    @PostMapping("/fetchHTML")
-    public ResponseEntity<String> fetchHTML (@RequestBody RequestDto inputUrl, HttpServletRequest request) {
+    @PostMapping("/scrapeRecipe")
+    public ResponseEntity<String> scrapeRecipe(@RequestBody RequestDto inputUrl, HttpServletRequest request) {
         String url = inputUrl.url();
 
         logger.info("handled request at {}", request.getRequestURL().toString());
@@ -36,7 +34,6 @@ public class KardamonController {
                     .userAgent("Mozilla/5.0")
                     .timeout(10000)
                     .get();
-            //return ResponseEntity.ok(doc.html());
             // TODO add url to the jsonObject
             return ResponseEntity.ok(kardamonService.extractRecipe(doc).toString());
         } catch (IOException e) {
