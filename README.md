@@ -37,8 +37,13 @@ The API returns a JSON object with the recipe's title, ingredients, instructions
 ```
 
 ## 🚧 Future Features
-- **Web Application**: Developing a web-based interface allowing users to store, edit, and organize their recipes.
-- **Unstructured Data Support**: Implementing the ability to handle unstructured data, improving the flexibility and coverage of the API.
-- **Image Extraction**: Adding functionality to extract and display images related to the recipes.
-- **Unit Conversion**: Adding a feature to convert recipe units, making it easier for users to scale recipes or switch between metric and imperial measurements.
-- **Recipe Scaling**: A feature to adjust ingredient quantities based on the chosen number of servings, allowing users to easily scale recipes up or down to suit their needs.
+- **Web Application**:<br/>
+  Developing a web-based interface allowing users to store, edit, and organize their recipes.
+- **Unstructured Data Support**:<br/>
+  Implementing the ability to handle unstructured data, improving the flexibility and coverage of the API.
+- **Image Extraction**:<br/>
+  Adding functionality to extract and display images related to the recipes.
+- **Unit Conversion**:<br/>
+  Adding a feature to convert recipe units, making it easier for users to scale recipes or switch between metric and imperial measurements.
+- **Recipe Scaling**:<br/>
+  A feature to adjust ingredient quantities based on the chosen number of servings, allowing users to easily scale recipes up or down to suit their needs.
