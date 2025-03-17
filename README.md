@@ -33,6 +33,7 @@ The API returns a JSON object with the recipe's title, ingredients, instructions
        "servings": "4",
        "ingredients": ["1/3 cup diced onion", "2 cloves garlic", "..."],
        "instructions": ["1. Preheat oven...", "2. Mix wet and dry ingredients..."],
+       "url": "https://healthyfoodiegirl.com/cottage-cheese-quiche/#wpzoom-premium-recipe-card"
    }
 ```
 
