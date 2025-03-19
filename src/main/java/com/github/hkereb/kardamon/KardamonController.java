@@ -27,7 +27,7 @@ public class KardamonController {
         String url = inputUrl.url();
 
         logger.info("handled request at {}", request.getRequestURL().toString());
-        logger.debug("request body at fetchHTML: {}", url);
+        logger.debug("request body at scrapeRecipe: {}", url);
 
         try {
             Document doc = Jsoup.connect(url)
@@ -35,7 +35,7 @@ public class KardamonController {
                     .timeout(10000)
                     .get();
             // TODO add url to the jsonObject
-            return ResponseEntity.ok(kardamonService.extractRecipe(doc).toString());
+            return ResponseEntity.ok(kardamonService.extractRecipe(doc).put("url", url).toString());
         } catch (IOException e) {
             logger.error("cant fetch page: {}: {}", url, e.getMessage());
             return ResponseEntity.badRequest().body("cant fetch the page");

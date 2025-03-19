@@ -1,4 +1,4 @@
-package com.github.hkereb.kardamon.parser;
+package com.github.hkereb.kardamon.parsers;
 
 import org.json.JSONArray;
 import org.jsoup.nodes.Document;
@@ -6,17 +6,24 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.json.JSONObject;
 import java.util.*;
-import java.util.regex.Pattern;
 
-// TODO split to smaller parsers
+// todo split instructions in microdata
+// todo gather patterns for ingredients (to later determine which pattern is present and parse ingredients)
+// todo find and add/delete numbers in instructions ("1.", "3")
+// todo unstructured data extraction (polish and english)
 public class RecipeParser {
     private final Document doc;
+    private final JsonLdParser jsonLdParser;
+    private final MicrodataParser microdataParser;
+
     public RecipeParser(Document doc) {
         this.doc = doc;
+        this.jsonLdParser = new JsonLdParser();
+        this.microdataParser = new MicrodataParser();
     }
     public JSONObject parseRecipe() {
         ///// JSON-LD ///////////////////////////////////////////////////////////////////////////////////////////////
-        JSONArray jsonLdObjects = getJsonLDObjects();
+        JSONArray jsonLdObjects = jsonLdParser.getJsonLdObjects(doc);
         if (!jsonLdObjects.isEmpty()) {
             for (int i = 0; i < jsonLdObjects.length(); i++) {
                 JSONObject jsonLdObject = jsonLdObjects.getJSONObject(i);
@@ -28,7 +35,7 @@ public class RecipeParser {
             }
         }
         ///// MICRODATA ///////////////////////////////////////////////////////////////////////////////////////////////
-        if (hasMicrodata()) {
+        if (microdataParser.hasMicrodata(doc)) {
             return parseMicrodata();
         }
         ///// UNSTRUCTURED ////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,47 +46,16 @@ public class RecipeParser {
 
 
     ///// JSON-LD ///////////////////////////////////////////////////////////////////////////////////////////////
-    private JSONArray getJsonLDObjects() {
-        Elements jsonLdScripts = doc.select("script[type='application/ld+json']"); // Zmieniamy na select(), aby uzyskać wszystkie tagi
-        JSONArray jsonObjects = new JSONArray();
-
-        for (Element jsonLdScript : jsonLdScripts) {
-            try {
-                JSONObject jsonObject = new JSONObject(jsonLdScript.html());
-                jsonObjects.put(jsonObject);
-            } catch (Exception e) {
-                System.err.println("Cannot parse JsonLD: " + e.getMessage());
-            }
-        }
-
-        return jsonObjects;
-    }
     private JSONObject parseJsonLd(JSONObject jsonLDObject) {
         JSONObject recipeJson = new JSONObject();
 
         recipeJson.put("title", getTitle());
         recipeJson.put("description", getDescription());
-        recipeJson.put("servings", extractSingleValue(jsonLDObject, "recipeYield"));
-        recipeJson.put("ingredients", extractJsonArray(jsonLDObject, "recipeIngredient"));
+        recipeJson.put("servings", jsonLdParser.extractSingleValue(jsonLDObject, "recipeYield"));
+        recipeJson.put("ingredients", jsonLdParser.extractArray(jsonLDObject, "recipeIngredient"));
         recipeJson.put("instructions", extractInstructions(jsonLDObject));
 
         return recipeJson;
-    }
-    private String extractSingleValue(JSONObject jsonObject, String key) {
-        if (jsonObject.has(key)) {
-            return jsonObject.getJSONArray(key).getString(0);
-        }
-        return "";
-    }
-    private List<String> extractJsonArray(JSONObject jsonLDObject, String key) {
-        List<String> result = new ArrayList<>();
-        if (jsonLDObject.has(key)) {
-            JSONArray array = jsonLDObject.getJSONArray(key);
-            for (int i = 0; i < array.length(); i++) {
-                result.add(array.getString(i));
-            }
-        }
-        return result;
     }
     private List<String> extractInstructions(JSONObject jsonObject) {
         List<String> instructions = new ArrayList<>();
@@ -98,38 +74,16 @@ public class RecipeParser {
     }
 
     ///// MICRODATA ///////////////////////////////////////////////////////////////////////////////////////////////
-    private boolean hasMicrodata() {
-        return !doc.select("[itemprop]").isEmpty();
-    }
     private JSONObject parseMicrodata() {
         JSONObject recipeJson = new JSONObject();
 
         recipeJson.put("title", getTitle());
         recipeJson.put("description", getDescription());
-        recipeJson.put("servings", extractMicrodataString("recipeYield"));
-        recipeJson.put("ingredients", extractMicrodataList("recipeIngredient"));
-        recipeJson.put("instructions", extractMicrodataList("recipeInstructions"));
+        recipeJson.put("servings", microdataParser.extractSingleValue(doc, "recipeYield"));
+        recipeJson.put("ingredients", microdataParser.extractList(doc, "recipeIngredient"));
+        recipeJson.put("instructions", microdataParser.extractList(doc, "recipeInstructions"));
 
         return recipeJson;
-    }
-    private List<String> extractMicrodataList(String itemprop) {
-        List<String> results = new ArrayList<>();
-        Elements elements = doc.select("[itemprop='" + itemprop + "']");
-        for (Element element : elements) {
-            results.add(element.text());
-        }
-        return results;
-    }
-    private String extractMicrodataString(String itemprop) {
-        Element element = doc.selectFirst("[itemprop='" + itemprop + "']");
-        if (element != null) {
-            String content = element.attr("content");
-            if (!content.isEmpty()) {
-                return content;
-            }
-            return element.text();
-        }
-        return "";
     }
 
     ///// UNSTRUCTURED ////////////////////////////////////////////////////////////////////////////////////////////
