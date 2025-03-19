@@ -1,6 +1,6 @@
 # 🌿 Kardamon - Recipe API
 
-Kardamon is an API designed to scrape recipes from a provided URL. It is the foundation for a future web application that will allow users to store and manage their collections of internet recipes.
+Kardamon is an API designed to scrape the essential parts of a recipe from a provided URL. It is the foundation for a future web application that will allow users to store and manage their collections of internet recipes.
 
 ## ✨ Supports
 
