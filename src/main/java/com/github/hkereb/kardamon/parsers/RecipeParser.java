@@ -3,7 +3,6 @@ package com.github.hkereb.kardamon.parsers;
 import org.json.JSONArray;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.json.JSONObject;
 import java.util.*;
 
@@ -22,35 +21,33 @@ public class RecipeParser {
         this.microdataParser = new MicrodataParser();
     }
     public JSONObject parseRecipe() {
-        ///// JSON-LD ///////////////////////////////////////////////////////////////////////////////////////////////
         JSONArray jsonLdObjects = jsonLdParser.getJsonLdObjects(doc);
         if (!jsonLdObjects.isEmpty()) {
             for (int i = 0; i < jsonLdObjects.length(); i++) {
                 JSONObject jsonLdObject = jsonLdObjects.getJSONObject(i);
-                JSONObject parsed = parseJsonLd(jsonLdObject);
+                JSONObject parsed = parseFromJsonLd(jsonLdObject);
 
                 if (!parsed.getJSONArray("ingredients").isEmpty()) {
                     return parsed;
                 }
             }
         }
-        ///// MICRODATA ///////////////////////////////////////////////////////////////////////////////////////////////
+
         if (microdataParser.hasMicrodata(doc)) {
-            return parseMicrodata();
+            return parseFromMicrodata();
         }
-        ///// UNSTRUCTURED ////////////////////////////////////////////////////////////////////////////////////////////
+
         //return parseFallback();
         return new JSONObject();
     }
 
-
-
     ///// JSON-LD ///////////////////////////////////////////////////////////////////////////////////////////////
-    private JSONObject parseJsonLd(JSONObject jsonLDObject) {
+    private JSONObject parseFromJsonLd(JSONObject jsonLDObject) {
         JSONObject recipeJson = new JSONObject();
 
         recipeJson.put("title", getTitle());
         recipeJson.put("description", getDescription());
+        // todo fix recipe yield (object, not array)
         recipeJson.put("servings", jsonLdParser.extractSingleValue(jsonLDObject, "recipeYield"));
         recipeJson.put("ingredients", jsonLdParser.extractArray(jsonLDObject, "recipeIngredient"));
         recipeJson.put("instructions", extractInstructions(jsonLDObject));
@@ -74,7 +71,7 @@ public class RecipeParser {
     }
 
     ///// MICRODATA ///////////////////////////////////////////////////////////////////////////////////////////////
-    private JSONObject parseMicrodata() {
+    private JSONObject parseFromMicrodata() {
         JSONObject recipeJson = new JSONObject();
 
         recipeJson.put("title", getTitle());

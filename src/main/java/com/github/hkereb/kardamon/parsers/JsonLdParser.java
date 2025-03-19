@@ -27,11 +27,10 @@ public class JsonLdParser {
 
     public String extractSingleValue(JSONObject jsonObject, String key) {
         if (jsonObject.has(key)) {
-            return jsonObject.getJSONArray(key).getString(0);
+            return jsonObject.get(key).toString();
         }
         return "";
     }
-
     public List<String> extractArray(JSONObject jsonLDObject, String key) {
         List<String> result = new ArrayList<>();
         if (jsonLDObject.has(key)) {
