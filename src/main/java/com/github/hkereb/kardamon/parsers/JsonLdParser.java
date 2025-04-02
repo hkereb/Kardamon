@@ -25,9 +25,14 @@ public class JsonLdParser {
         return jsonObjects;
     }
 
-    public String extractSingleValue(JSONObject jsonObject, String key) {
-        if (jsonObject.has(key)) {
-            return jsonObject.get(key).toString();
+    public String extractSingleValue(JSONObject jsonLDObject, String key) {
+        if (jsonLDObject.has(key)) {
+            Object item = jsonLDObject.get(key);
+            if (item instanceof JSONArray) {
+                JSONArray array = jsonLDObject.getJSONArray(key);
+                return array.getString(0);
+            }
+            return item.toString();
         }
         return "";
     }

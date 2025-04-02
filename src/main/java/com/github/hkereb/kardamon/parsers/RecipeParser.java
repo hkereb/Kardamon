@@ -47,7 +47,6 @@ public class RecipeParser {
 
         recipeJson.put("title", getTitle());
         recipeJson.put("description", getDescription());
-        // todo fix recipe yield (object, not array)
         recipeJson.put("servings", jsonLdParser.extractSingleValue(jsonLDObject, "recipeYield"));
         recipeJson.put("ingredients", jsonLdParser.extractArray(jsonLDObject, "recipeIngredient"));
         recipeJson.put("instructions", extractInstructions(jsonLDObject));
