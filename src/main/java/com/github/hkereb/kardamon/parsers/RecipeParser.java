@@ -103,4 +103,11 @@ public class RecipeParser {
         Element description = doc.selectFirst("meta[name=description]");
         return (description != null) ? description.attr("content") : "";
     }
+
+    ///// EXTRA ////////////////////////////////////////////////////////////////////////////////////////////
+    // todo find and add/delete numbers in instructions ("1.", "3")
+    /*
+    if there is an instance of the pattern (pattern not there yet) in the first element of the array then loop through all elements
+    and delete the part that fits the pattern to normalize instructions. if not, skip the rest of the elements without modifications
+     */
 }
