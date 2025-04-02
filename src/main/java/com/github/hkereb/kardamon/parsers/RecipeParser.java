@@ -37,7 +37,7 @@ public class RecipeParser {
             return parseFromMicrodata();
         }
 
-        //return parseFallback();
+        // todo return parseFallback(); - (plan B aka unstructured data)
         return new JSONObject();
     }
 
